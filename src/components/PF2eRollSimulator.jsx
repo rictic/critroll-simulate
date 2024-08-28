@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -60,6 +59,10 @@ const PF2eRollSimulator = () => {
     });
   };
 
+  useEffect(() => {
+    simulateRolls();
+  }, [dc, modifier, damageRoll]);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">PF2e Roll Simulator</h1>
@@ -93,48 +96,45 @@ const PF2eRollSimulator = () => {
           />
         </div>
       </div>
-      <Button onClick={() => simulateRolls()}>Run Simulation</Button>
       {results && (
-        <div className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Roll Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className="text-left">Outcome</th>
-                    <th className="text-right">Chance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Critical Success</td>
-                    <td className="text-right font-bold">{results.critSuccess}%</td>
-                  </tr>
-                  <tr>
-                    <td>Success</td>
-                    <td className="text-right font-bold">{results.success}%</td>
-                  </tr>
-                  <tr>
-                    <td>Failure</td>
-                    <td className="text-right font-bold">{results.failure}%</td>
-                  </tr>
-                  <tr>
-                    <td>Critical Failure</td>
-                    <td className="text-right font-bold">{results.critFailure}%</td>
-                  </tr>
-                </tbody>
-              </table>
-              {results.averageDamage !== null && (
-                <div className="mt-4">
-                  <strong>Average Damage per Roll:</strong> {results.averageDamage}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle>Roll Results</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="text-left">Outcome</th>
+                  <th className="text-right">Chance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Critical Success</td>
+                  <td className="text-right font-bold">{results.critSuccess}%</td>
+                </tr>
+                <tr>
+                  <td>Success</td>
+                  <td className="text-right font-bold">{results.success}%</td>
+                </tr>
+                <tr>
+                  <td>Failure</td>
+                  <td className="text-right font-bold">{results.failure}%</td>
+                </tr>
+                <tr>
+                  <td>Critical Failure</td>
+                  <td className="text-right font-bold">{results.critFailure}%</td>
+                </tr>
+              </tbody>
+            </table>
+            {results.averageDamage !== null && (
+              <div className="mt-4">
+                <strong>Average Damage per Roll:</strong> {results.averageDamage}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   );

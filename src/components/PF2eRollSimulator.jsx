@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PF2eRollSimulator = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,6 +13,7 @@ const PF2eRollSimulator = () => {
   const [damageRoll, setDamageRoll] = useState(() => searchParams.get('damageRoll') || '');
   const [isAgile, setIsAgile] = useState(() => searchParams.get('isAgile') === 'true');
   const [results, setResults] = useState(null);
+  const [damageHistogram, setDamageHistogram] = useState([]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -48,6 +50,7 @@ const PF2eRollSimulator = () => {
       critFailure: 0,
       totalDamage: 0
     }));
+    const damageHistogram = {};
 
     for (let i = 0; i < iterations; i++) {
       penalties.forEach((penalty, index) => {
@@ -56,16 +59,24 @@ const PF2eRollSimulator = () => {
                     (roll === 20) ? 30 + modifier + penalty :
                     roll + modifier + penalty;
 
+        let damage = 0;
         if (total >= dc + 10) {
           results[index].critSuccess++;
-          if (damageRollParsed) results[index].totalDamage += rollDamage(damageRollParsed) * 2;
+          if (damageRollParsed) damage = rollDamage(damageRollParsed) * 2;
         } else if (total >= dc) {
           results[index].success++;
-          if (damageRollParsed) results[index].totalDamage += rollDamage(damageRollParsed);
+          if (damageRollParsed) damage = rollDamage(damageRollParsed);
         } else if (total >= dc - 10) {
           results[index].failure++;
         } else {
           results[index].critFailure++;
+        }
+
+        results[index].totalDamage += damage;
+
+        // Only collect histogram data for the first attack
+        if (index === 0) {
+          damageHistogram[damage] = (damageHistogram[damage] || 0) + 1;
         }
       });
     }
@@ -78,6 +89,14 @@ const PF2eRollSimulator = () => {
       critFailure: Math.round(result.critFailure / iterations * 100),
       averageDamage: damageRollParsed ? Math.round((result.totalDamage / iterations) * 100) / 100 : null
     })));
+
+    // Convert histogram data to chart format
+    const histogramData = Object.entries(damageHistogram).map(([damage, count]) => ({
+      damage: parseInt(damage),
+      frequency: (count / iterations) * 100
+    })).sort((a, b) => a.damage - b.damage);
+
+    setDamageHistogram(histogramData);
   };
 
   useEffect(() => {
@@ -126,39 +145,56 @@ const PF2eRollSimulator = () => {
         <Label htmlFor="isAgile">Agile</Label>
       </div>
       {results && (
-        <Card className="mt-4">
-          <CardHeader>
-            <CardTitle className="text-lg">Roll Results</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="text-left">Attack</th>
-                  <th className="text-right">Crit Success</th>
-                  <th className="text-right">Success</th>
-                  <th className="text-right">Failure</th>
-                  <th className="text-right">Crit Failure</th>
-                  <th className="text-right">Avg. Damage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((result, index) => (
-                  <tr key={index}>
-                    <td>{result.penalty === 0 ? 'First' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} (${result.penalty})`}</td>
-                    <td className="text-right font-bold">{result.critSuccess}%</td>
-                    <td className="text-right font-bold">{result.success}%</td>
-                    <td className="text-right font-bold">{result.failure}%</td>
-                    <td className="text-right font-bold">{result.critFailure}%</td>
-                    <td className="text-right font-bold">
-                      {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
-                    </td>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Roll Results</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">Attack</th>
+                    <th className="text-right">Crit Success</th>
+                    <th className="text-right">Success</th>
+                    <th className="text-right">Failure</th>
+                    <th className="text-right">Crit Failure</th>
+                    <th className="text-right">Avg. Damage</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
+                </thead>
+                <tbody>
+                  {results.map((result, index) => (
+                    <tr key={index}>
+                      <td>{result.penalty === 0 ? 'First' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} (${result.penalty})`}</td>
+                      <td className="text-right font-bold">{result.critSuccess}%</td>
+                      <td className="text-right font-bold">{result.success}%</td>
+                      <td className="text-right font-bold">{result.failure}%</td>
+                      <td className="text-right font-bold">{result.critFailure}%</td>
+                      <td className="text-right font-bold">
+                        {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Damage Histogram (First Attack)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={damageHistogram}>
+                  <XAxis dataKey="damage" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="frequency" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

@@ -126,48 +126,54 @@ const PF2eRollSimulator = () => {
         <Label htmlFor="isAgile">Agile</Label>
       </div>
       {results && (
-        <div className="mt-4 space-y-4">
-          {results.map((result, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>Roll Results {result.penalty === 0 ? '(First Attack)' : `(${index + 1}${['st', 'nd', 'rd'][index] || 'th'} Attack, ${result.penalty} penalty)`}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left">Outcome</th>
-                      <th className="text-right">Chance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Critical Success</td>
-                      <td className="text-right font-bold">{result.critSuccess}%</td>
-                    </tr>
-                    <tr>
-                      <td>Success</td>
-                      <td className="text-right font-bold">{result.success}%</td>
-                    </tr>
-                    <tr>
-                      <td>Failure</td>
-                      <td className="text-right font-bold">{result.failure}%</td>
-                    </tr>
-                    <tr>
-                      <td>Critical Failure</td>
-                      <td className="text-right font-bold">{result.critFailure}%</td>
-                    </tr>
-                  </tbody>
-                </table>
-                {result.averageDamage !== null && (
-                  <div className="mt-4">
-                    <strong>Average Damage per Roll:</strong> {result.averageDamage}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle>Roll Results</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {results.map((result, index) => (
+                <div key={index}>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {result.penalty === 0 ? 'First Attack' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} Attack (${result.penalty} penalty)`}
+                  </h3>
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="text-left">Outcome</th>
+                        <th className="text-right">Chance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Critical Success</td>
+                        <td className="text-right font-bold">{result.critSuccess}%</td>
+                      </tr>
+                      <tr>
+                        <td>Success</td>
+                        <td className="text-right font-bold">{result.success}%</td>
+                      </tr>
+                      <tr>
+                        <td>Failure</td>
+                        <td className="text-right font-bold">{result.failure}%</td>
+                      </tr>
+                      <tr>
+                        <td>Critical Failure</td>
+                        <td className="text-right font-bold">{result.critFailure}%</td>
+                      </tr>
+                      {result.averageDamage !== null && (
+                        <tr>
+                          <td>Average Damage per Roll</td>
+                          <td className="text-right font-bold">{result.averageDamage}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const PF2eRollSimulator = () => {
-  const [dc, setDc] = useState(15);
-  const [modifier, setModifier] = useState(5);
-  const [damageRoll, setDamageRoll] = useState('');
-  const [isAgile, setIsAgile] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [dc, setDc] = useState(() => parseInt(searchParams.get('dc')) || 15);
+  const [modifier, setModifier] = useState(() => parseInt(searchParams.get('modifier')) || 5);
+  const [damageRoll, setDamageRoll] = useState(() => searchParams.get('damageRoll') || '');
+  const [isAgile, setIsAgile] = useState(() => searchParams.get('isAgile') === 'true');
   const [results, setResults] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('dc', dc);
+    params.set('modifier', modifier);
+    if (damageRoll) params.set('damageRoll', damageRoll);
+    params.set('isAgile', isAgile);
+    setSearchParams(params);
+  }, [dc, modifier, damageRoll, isAgile, setSearchParams]);
 
   const parseDamageRoll = (damageString) => {
     const match = damageString.match(/(\d+)d(\d+)(?:\s*\+\s*(\d+))?/);
@@ -83,7 +94,7 @@ const PF2eRollSimulator = () => {
             id="dc"
             type="number"
             value={dc}
-            onChange={(e) => setDc(parseInt(e.target.value))}
+            onChange={(e) => setDc(parseInt(e.target.value) || 0)}
           />
         </div>
         <div>
@@ -92,7 +103,7 @@ const PF2eRollSimulator = () => {
             id="modifier"
             type="number"
             value={modifier}
-            onChange={(e) => setModifier(parseInt(e.target.value))}
+            onChange={(e) => setModifier(parseInt(e.target.value) || 0)}
           />
         </div>
         <div>
@@ -110,7 +121,7 @@ const PF2eRollSimulator = () => {
         <Checkbox
           id="isAgile"
           checked={isAgile}
-          onCheckedChange={setIsAgile}
+          onCheckedChange={(checked) => setIsAgile(checked)}
         />
         <Label htmlFor="isAgile">Agile</Label>
       </div>

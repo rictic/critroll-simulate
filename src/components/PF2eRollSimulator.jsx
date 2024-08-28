@@ -128,50 +128,35 @@ const PF2eRollSimulator = () => {
       {results && (
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle>Roll Results</CardTitle>
+            <CardTitle className="text-lg">Roll Results</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {results.map((result, index) => (
-                <div key={index}>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {result.penalty === 0 ? 'First Attack' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} Attack (${result.penalty} penalty)`}
-                  </h3>
-                  <table className="w-full">
-                    <thead>
-                      <tr>
-                        <th className="text-left">Outcome</th>
-                        <th className="text-right">Chance</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Critical Success</td>
-                        <td className="text-right font-bold">{result.critSuccess}%</td>
-                      </tr>
-                      <tr>
-                        <td>Success</td>
-                        <td className="text-right font-bold">{result.success}%</td>
-                      </tr>
-                      <tr>
-                        <td>Failure</td>
-                        <td className="text-right font-bold">{result.failure}%</td>
-                      </tr>
-                      <tr>
-                        <td>Critical Failure</td>
-                        <td className="text-right font-bold">{result.critFailure}%</td>
-                      </tr>
-                      {result.averageDamage !== null && (
-                        <tr>
-                          <td>Average Damage per Roll</td>
-                          <td className="text-right font-bold">{result.averageDamage}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
-            </div>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="text-left">Attack</th>
+                  <th className="text-right">Crit Success</th>
+                  <th className="text-right">Success</th>
+                  <th className="text-right">Failure</th>
+                  <th className="text-right">Crit Failure</th>
+                  <th className="text-right">Avg. Damage</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((result, index) => (
+                  <tr key={index}>
+                    <td>{result.penalty === 0 ? 'First' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} (${result.penalty})`}</td>
+                    <td className="text-right font-bold">{result.critSuccess}%</td>
+                    <td className="text-right font-bold">{result.success}%</td>
+                    <td className="text-right font-bold">{result.failure}%</td>
+                    <td className="text-right font-bold">{result.critFailure}%</td>
+                    <td className="text-right font-bold">
+                      {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
       )}

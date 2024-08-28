@@ -27,10 +27,10 @@ const PF2eRollSimulator = () => {
     }
 
     setResults({
-      critSuccess: (critSuccess / iterations * 100).toFixed(2),
-      success: (success / iterations * 100).toFixed(2),
-      failure: (failure / iterations * 100).toFixed(2),
-      critFailure: (critFailure / iterations * 100).toFixed(2)
+      critSuccess: Math.round(critSuccess / iterations * 100),
+      success: Math.round(success / iterations * 100),
+      failure: Math.round(failure / iterations * 100),
+      critFailure: Math.round(critFailure / iterations * 100)
     });
   };
 
@@ -59,37 +59,38 @@ const PF2eRollSimulator = () => {
       </div>
       <Button onClick={() => simulateRolls()}>Run Simulation</Button>
       {results && (
-        <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Critical Success</CardTitle>
+              <CardTitle>Roll Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{results.critSuccess}%</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Success</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{results.success}%</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Failure</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{results.failure}%</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Critical Failure</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{results.critFailure}%</p>
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">Outcome</th>
+                    <th className="text-right">Chance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Critical Success</td>
+                    <td className="text-right font-bold">{results.critSuccess}%</td>
+                  </tr>
+                  <tr>
+                    <td>Success</td>
+                    <td className="text-right font-bold">{results.success}%</td>
+                  </tr>
+                  <tr>
+                    <td>Failure</td>
+                    <td className="text-right font-bold">{results.failure}%</td>
+                  </tr>
+                  <tr>
+                    <td>Critical Failure</td>
+                    <td className="text-right font-bold">{results.critFailure}%</td>
+                  </tr>
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         </div>

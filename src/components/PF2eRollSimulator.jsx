@@ -75,7 +75,7 @@ const PF2eRollSimulator = () => {
         results[index].totalDamage += damage;
 
         // Only collect histogram data for the first attack
-        if (index === 0) {
+        if (index === 0 && damageRollParsed) {
           damageHistogram[damage] = (damageHistogram[damage] || 0) + 1;
         }
       });
@@ -91,12 +91,15 @@ const PF2eRollSimulator = () => {
     })));
 
     // Convert histogram data to chart format
-    const histogramData = Object.entries(damageHistogram).map(([damage, count]) => ({
-      damage: parseInt(damage),
-      frequency: (count / iterations) * 100
-    })).sort((a, b) => a.damage - b.damage);
-
-    setDamageHistogram(histogramData);
+    if (damageRollParsed) {
+      const histogramData = Object.entries(damageHistogram).map(([damage, count]) => ({
+        damage: parseInt(damage),
+        frequency: (count / iterations) * 100
+      })).sort((a, b) => a.damage - b.damage);
+      setDamageHistogram(histogramData);
+    } else {
+      setDamageHistogram([]);
+    }
   };
 
   useEffect(() => {
@@ -106,7 +109,7 @@ const PF2eRollSimulator = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">PF2e Roll Simulator</h1>
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div>
           <Label htmlFor="dc">DC</Label>
           <Input
@@ -145,7 +148,7 @@ const PF2eRollSimulator = () => {
         <Label htmlFor="isAgile">Agile</Label>
       </div>
       {results && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 mt-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Roll Results</CardTitle>
@@ -159,7 +162,7 @@ const PF2eRollSimulator = () => {
                     <th className="text-right">Success</th>
                     <th className="text-right">Failure</th>
                     <th className="text-right">Crit Failure</th>
-                    <th className="text-right">Avg. Damage</th>
+                    {damageRoll && <th className="text-right">Avg. Damage</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -170,30 +173,34 @@ const PF2eRollSimulator = () => {
                       <td className="text-right font-bold">{result.success}%</td>
                       <td className="text-right font-bold">{result.failure}%</td>
                       <td className="text-right font-bold">{result.critFailure}%</td>
-                      <td className="text-right font-bold">
-                        {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
-                      </td>
+                      {damageRoll && (
+                        <td className="text-right font-bold">
+                          {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Damage Histogram (First Attack)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={damageHistogram}>
-                  <XAxis dataKey="damage" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="frequency" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          {damageRoll && damageHistogram.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Damage Histogram (First Attack)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={damageHistogram}>
+                    <XAxis dataKey="damage" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="frequency" fill="#8884d8" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>

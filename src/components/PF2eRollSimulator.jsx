@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PF2eRollSimulator = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,6 +14,7 @@ const PF2eRollSimulator = () => {
   const [isAgile, setIsAgile] = useState(() => searchParams.get('isAgile') === 'true');
   const [results, setResults] = useState(null);
   const [damageHistogram, setDamageHistogram] = useState([]);
+  const [dcDamageData, setDcDamageData] = useState([]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -104,7 +105,46 @@ const PF2eRollSimulator = () => {
 
   useEffect(() => {
     simulateRolls();
+    calculateDcDamageData();
   }, [dc, modifier, damageRoll, isAgile]);
+
+  const calculateDcDamageData = () => {
+    const damageRollParsed = parseDamageRoll(damageRoll);
+    if (!damageRollParsed) {
+      setDcDamageData([]);
+      return;
+    }
+
+    const dcRange = Array.from({length: 41}, (_, i) => modifier - 20 + i);
+    const data = dcRange.map(currentDc => {
+      const averageDamage = simulateRollsForDc(currentDc, 10000);
+      return { dc: currentDc, averageDamage };
+    });
+    setDcDamageData(data);
+  };
+
+  const simulateRollsForDc = (currentDc, iterations) => {
+    const damageRollParsed = parseDamageRoll(damageRoll);
+    let totalDamage = 0;
+
+    for (let i = 0; i < iterations; i++) {
+      let roll = Math.floor(Math.random() * 20) + 1;
+      let total = (roll === 1) ? -9 + modifier :
+                  (roll === 20) ? 30 + modifier :
+                  roll + modifier;
+
+      let damage = 0;
+      if (total >= currentDc + 10) {
+        damage = rollDamage(damageRollParsed) * 2;
+      } else if (total >= currentDc) {
+        damage = rollDamage(damageRollParsed);
+      }
+
+      totalDamage += damage;
+    }
+
+    return totalDamage / iterations;
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -148,7 +188,7 @@ const PF2eRollSimulator = () => {
         <Label htmlFor="isAgile">Agile</Label>
       </div>
       {results && (
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 3xl:grid-cols-2 gap-4 mt-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Roll Results</CardTitle>
@@ -197,6 +237,23 @@ const PF2eRollSimulator = () => {
                     <Tooltip />
                     <Bar dataKey="frequency" fill="#8884d8" />
                   </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+          {damageRoll && dcDamageData.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Average Damage by DC</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={dcDamageData}>
+                    <XAxis dataKey="dc" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="averageDamage" stroke="#8884d8" />
+                  </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>

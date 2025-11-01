@@ -148,7 +148,10 @@ const PF2eRollSimulator = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
-      <h1 className="text-4xl font-bold mb-8 text-foreground">PF2e Roll Simulator</h1>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-foreground mb-2">Pathfinder 2e Attack Simulator</h1>
+        <p className="text-muted-foreground text-lg">Simulate attack rolls and damage across different DCs</p>
+      </div>
       <Card className="mb-6">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">

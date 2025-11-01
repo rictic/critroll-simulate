@@ -147,112 +147,153 @@ const PF2eRollSimulator = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">PF2e Roll Simulator</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <div>
-          <Label htmlFor="dc">DC</Label>
-          <Input
-            id="dc"
-            type="number"
-            value={dc}
-            onChange={(e) => setDc(parseInt(e.target.value) || 0)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="modifier">Total Modifier</Label>
-          <Input
-            id="modifier"
-            type="number"
-            value={modifier}
-            onChange={(e) => setModifier(parseInt(e.target.value) || 0)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="damageRoll">Damage Roll (e.g., 2d4+3)</Label>
-          <Input
-            id="damageRoll"
-            type="text"
-            value={damageRoll}
-            onChange={(e) => setDamageRoll(e.target.value)}
-            placeholder="2d4+3"
-          />
-        </div>
-      </div>
-      <div className="flex items-center space-x-2 mb-4">
-        <Checkbox
-          id="isAgile"
-          checked={isAgile}
-          onCheckedChange={(checked) => setIsAgile(checked)}
-        />
-        <Label htmlFor="isAgile">Agile</Label>
-      </div>
+    <div className="container mx-auto p-6 max-w-7xl">
+      <h1 className="text-4xl font-bold mb-8 text-foreground">PF2e Roll Simulator</h1>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+            <div>
+              <Label htmlFor="dc" className="text-sm font-medium mb-2 block">DC</Label>
+              <Input
+                id="dc"
+                type="number"
+                value={dc}
+                onChange={(e) => setDc(parseInt(e.target.value) || 0)}
+                className="text-lg"
+              />
+            </div>
+            <div>
+              <Label htmlFor="modifier" className="text-sm font-medium mb-2 block">Total Modifier</Label>
+              <Input
+                id="modifier"
+                type="number"
+                value={modifier}
+                onChange={(e) => setModifier(parseInt(e.target.value) || 0)}
+                className="text-lg"
+              />
+            </div>
+            <div>
+              <Label htmlFor="damageRoll" className="text-sm font-medium mb-2 block">Damage Roll (e.g., 2d4+3)</Label>
+              <Input
+                id="damageRoll"
+                type="text"
+                value={damageRoll}
+                onChange={(e) => setDamageRoll(e.target.value)}
+                placeholder="2d4+3"
+                className="text-lg"
+              />
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="isAgile"
+              checked={isAgile}
+              onCheckedChange={(checked) => setIsAgile(checked)}
+            />
+            <Label htmlFor="isAgile" className="text-sm font-medium cursor-pointer">Agile</Label>
+          </div>
+        </CardContent>
+      </Card>
       {results && (
-        <div className="grid grid-cols-1 3xl:grid-cols-2 gap-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Roll Results</CardTitle>
+        <div className="grid grid-cols-1 3xl:grid-cols-2 gap-6">
+          <Card className="shadow-lg">
+            <CardHeader className="border-b bg-muted/30">
+              <CardTitle className="text-xl">Roll Results</CardTitle>
             </CardHeader>
-            <CardContent>
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className="text-left">Attack</th>
-                    <th className="text-right">Crit Success</th>
-                    <th className="text-right">Success</th>
-                    <th className="text-right">Failure</th>
-                    <th className="text-right">Crit Failure</th>
-                    {damageRoll && <th className="text-right">Avg. Damage</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {results.map((result, index) => (
-                    <tr key={index}>
-                      <td>{result.penalty === 0 ? 'First' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} (${result.penalty})`}</td>
-                      <td className="text-right font-bold">{result.critSuccess}%</td>
-                      <td className="text-right font-bold">{result.success}%</td>
-                      <td className="text-right font-bold">{result.failure}%</td>
-                      <td className="text-right font-bold">{result.critFailure}%</td>
-                      {damageRoll && (
-                        <td className="text-right font-bold">
-                          {result.averageDamage !== null ? `${result.averageDamage} damage` : 'N/A'}
-                        </td>
-                      )}
+            <CardContent className="pt-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-border">
+                      <th className="text-left py-3 px-2 font-semibold text-sm">Attack</th>
+                      <th className="text-right py-3 px-2 font-semibold text-sm">Crit Success</th>
+                      <th className="text-right py-3 px-2 font-semibold text-sm">Success</th>
+                      <th className="text-right py-3 px-2 font-semibold text-sm">Failure</th>
+                      <th className="text-right py-3 px-2 font-semibold text-sm">Crit Failure</th>
+                      {damageRoll && <th className="text-right py-3 px-2 font-semibold text-sm">Avg. Damage</th>}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {results.map((result, index) => (
+                      <tr key={index} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                        <td className="py-3 px-2 font-medium">{result.penalty === 0 ? 'First' : `${index + 1}${['st', 'nd', 'rd'][index] || 'th'} (${result.penalty})`}</td>
+                        <td className="text-right py-3 px-2 font-semibold text-primary">{result.critSuccess}%</td>
+                        <td className="text-right py-3 px-2 font-semibold">{result.success}%</td>
+                        <td className="text-right py-3 px-2 font-semibold text-muted-foreground">{result.failure}%</td>
+                        <td className="text-right py-3 px-2 font-semibold text-destructive">{result.critFailure}%</td>
+                        {damageRoll && (
+                          <td className="text-right py-3 px-2 font-semibold text-accent-foreground">
+                            {result.averageDamage !== null ? `${result.averageDamage}` : 'N/A'}
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
           {damageRoll && damageHistogram.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Damage Histogram (First Attack)</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="text-xl">Damage Histogram (First Attack)</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={damageHistogram}>
-                    <XAxis dataKey="damage" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="frequency" fill="#8884d8" />
+                    <XAxis 
+                      dataKey="damage" 
+                      label={{ value: 'Damage', position: 'insideBottom', offset: -5 }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
+                    />
+                    <YAxis 
+                      label={{ value: 'Frequency (%)', angle: -90, position: 'insideLeft' }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="frequency" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           )}
           {damageRoll && dcDamageData.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Average Damage by DC</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="text-xl">Average Damage by DC</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={dcDamageData}>
-                    <XAxis dataKey="dc" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="averageDamage" stroke="#8884d8" />
+                    <XAxis 
+                      dataKey="dc" 
+                      label={{ value: 'DC', position: 'insideBottom', offset: -5 }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
+                    />
+                    <YAxis 
+                      label={{ value: 'Average Damage', angle: -90, position: 'insideLeft' }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="averageDamage" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      dot={{ fill: 'hsl(var(--primary))', r: 3 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>

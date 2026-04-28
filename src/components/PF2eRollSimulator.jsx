@@ -200,8 +200,8 @@ const PF2eRollSimulator = () => {
       {results && (
         <div className="grid grid-cols-1 3xl:grid-cols-2 gap-6">
           <Card className="shadow-lg">
-            <CardHeader className="border-b bg-muted/30">
-              <CardTitle className="text-xl">Roll Results</CardTitle>
+            <CardHeader className="border-b bg-muted/30 py-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Roll Results</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="overflow-x-auto">
@@ -238,8 +238,8 @@ const PF2eRollSimulator = () => {
           </Card>
           {damageRoll && damageHistogram.length > 0 && (
             <Card className="shadow-lg">
-              <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="text-xl">Damage Histogram (First Attack)</CardTitle>
+              <CardHeader className="border-b bg-muted/30 py-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Damage Histogram (First Attack)</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <ResponsiveContainer width="100%" height={300}>
@@ -268,8 +268,8 @@ const PF2eRollSimulator = () => {
           )}
           {damageRoll && dcDamageData.length > 0 && (
             <Card className="shadow-lg">
-              <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="text-xl">Average Damage by DC</CardTitle>
+              <CardHeader className="border-b bg-muted/30 py-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Average Damage by DC</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <ResponsiveContainer width="100%" height={300}>
